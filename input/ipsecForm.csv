@@ -1,0 +1,2 @@
+customerName,nameAbbrev,ikeVer,peerIP,secondaryPeer,p2Proposal,P2lifetime,pfsEnabled,dhgroup,ikeNegMode,cmapIndex,outsidemap
+TestCustomer,test,1,1.1.1.1,2.2.2.2,AES256_SHA1,28800,y,5,main,100,outside_map

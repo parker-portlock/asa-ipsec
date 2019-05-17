@@ -1,4 +1,4 @@
-    #objectGroup.py -> Quickly create Cisco object-groups for tunnels
+    #tunGroup.py -> Quickly create Cisco object-groups for tunnels
     #Copyright (C) 2018 Parker M. Portlock
 
     #This program is free software: you can redistribute it and/or modify

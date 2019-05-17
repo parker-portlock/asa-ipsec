@@ -1,4 +1,4 @@
-    #ipsec.py -> Quickly create Cisco ikev1 and ikev2 tunnels
+    #tunObject.py -> Quickly create Cisco ASA objects for site-to-site tunnels
     #Copyright (C) 2018 Parker M. Portlock
 
     #This program is free software: you can redistribute it and/or modify

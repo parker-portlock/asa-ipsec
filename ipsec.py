@@ -15,11 +15,88 @@
     #along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import sys
-import tunObject
-import tunGroup
 import password
 import csv
 import os
+
+
+def CiscoTunGroup():
+#opens CSVs
+	with open('input/ipsecForm.csv','rt') as ipsecForm:
+		vpnForm = csv.reader(ipsecForm, delimiter = ',', quotechar = '|')
+		vpnForm = list(vpnForm)
+	with open('input/localObjects.csv', 'rt') as csvLoc:
+		localAddr = csv.reader(csvLoc, delimiter=',', quotechar='|')
+		localAddr = list(localAddr)
+	with open('input/remoteObjects.csv', 'rt') as csvRem:
+		remoteAddr = csv.reader(csvRem, delimiter=',', quotechar='|')
+		remoteAddr = list(remoteAddr)
+
+	#creates object group names
+	localGroupName = 'VPN_'+ vpnForm[1][1] + '_LOCAL'
+	remoteGroupName ='VPN_'+ vpnForm[1][1] + '_REMOTE'
+	with open('input/encGroups.csv', 'w', newline='') as csvEncGroup:
+		groupWriter = csv.writer(csvEncGroup, delimiter = ',', quotechar = '|')
+		groupWriter.writerow([localGroupName,remoteGroupName])
+	#writes local object-group output
+	print("Creating local group...")
+	print("object-group network", localGroupName, file=open("output/ipsec.txt","a"))
+	for i in range(len(localAddr)-1):
+		print(" network-object object", localAddr[i+1][1], file=open("output/ipsec.txt","a"))
+	print("exit", file=open("output/ipsec.txt","a"))
+	
+	#writes remote object-group output
+	print("Creating remote group...")
+	print("object-group network", remoteGroupName, file=open("output/ipsec.txt","a"))
+	for i in range(len(remoteAddr)-1):
+		print(" network-object object", remoteAddr[i+1][1], file=open("output/ipsec.txt","a"))
+	print("exit", file=open("output/ipsec.txt","a"))
+
+def CiscoGroup():
+	groupName = input("What's the name for the object group? ")
+	with open('input/addr.csv', 'rt') as csvObj:
+    		address = csv.reader(csvObj, delimiter=',', quotechar='|')
+    		address = list(address)
+
+	print("object-group network", groupName, file=open("output/Objects.txt","a"))
+	for i in range(len(address)-1):
+		print("network-object object", address[i+1][1], file=open("output/Objects.txt","a"))
+	print("exit", file=open("output/Objects.txt","a"))
+
+def CiscoTunObject():
+#CSV READ
+			loadFile = input ("Did you load the localObjects.csv and remoteObjects.csv in /input? (y/n) ")
+			if loadFile == "y":
+#opens Local and remote CSV
+				with open('input/localObjects.csv', 'rt') as csvLoc:
+			    		localAddr = csv.reader(csvLoc, delimiter=',', quotechar='|')
+			    		localAddr = list(localAddr)
+				with open('input/remoteObjects.csv', 'rt') as csvRem:
+			    		remoteAddr = csv.reader(csvRem, delimiter=',', quotechar='|')
+			    		remoteAddr = list(remoteAddr)
+			else:
+				print ("Invalid input... exiting program")
+				sys.exit()
+#Local object Creation
+			objectType = "network"
+			print("Creating local objects...")
+			for i in range(len(localAddr)-1):
+				netType = localAddr[i+1][2]
+				if netType =='':
+					print("object", objectType, localAddr[i+1][1], "\n", "host", localAddr[i+1][0], file=open("output/ipsec.txt", "a"))
+				elif netType !='':
+					print("object", objectType, localAddr[i+1][1], "\n", "subnet", localAddr[i+1][0], localAddr[i+1][2], file=open("output/ipsec.txt", "a"))
+
+#Remote object Creation
+			print("creating remote objects...")
+			for i in range(len(remoteAddr)-1):
+				netType = remoteAddr[i+1][2]
+				if netType =='':
+					print("object", objectType, remoteAddr[i+1][1], "\n", "host", remoteAddr[i+1][0], file=open("output/ipsec.txt", "a"))
+				elif netType != '':
+					print("object", objectType, remoteAddr[i+1][1], "\n", "subnet", remoteAddr[i+1][0], remoteAddr[i+1][2], file=open("output/ipsec.txt", "a"))
+				
+
 
 with open('input/ipsecForm.csv','rt') as ipsecForm:
     vpnForm = csv.reader(ipsecForm, delimiter = ',', quotechar = '|')
@@ -28,10 +105,13 @@ with open('input/ipsecForm.csv','rt') as ipsecForm:
 ###################
 # object creation #
 ###################
-
 print("Starting...")
-tunObject.CiscoTunObject()
-tunGroup.CiscoTunGroup()
+CiscoTunObject()
+
+##################
+# group creation #
+##################
+CiscoTunGroup()
 
 ###########################
 # crypto-map ACL creation #
